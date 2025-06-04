@@ -12,6 +12,16 @@ Pinzy is a React Native mobile application that helps users discover and explore
 - 🌐 Location-based recommendations
 - 🎯 Detailed place information
 
+## Screenshots
+
+<div align="center">
+  <img src="src/assets/1.png" alt="Home Screen" width="200"/>
+  <img src="src/assets/2.png" alt="Search Results" width="200"/>
+  <img src="src/assets/3.png" alt="Map View" width="200"/>
+  <img src="src/assets/4.png" alt="Place Details" width="200"/>
+  <img src="src/assets/5.png" alt="Nearby Places" width="200"/>
+</div>
+
 ## Prerequisites
 
 Before you begin, ensure you have the following installed:
