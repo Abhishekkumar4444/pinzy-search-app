@@ -284,31 +284,23 @@ const HomeScreen = ({navigation}) => {
       title={item.description}
       onPress={() => handleSuggestionPress(item)}
       left={props => (
-        <View
-          style={{
-            backgroundColor: COLORS.primary + '20',
-            borderRadius: 12,
-            padding: 10,
-            marginRight: 12,
-            shadowColor: COLORS.primary,
-            shadowOffset: {
-              width: 0,
-              height: 2,
-            },
-            shadowOpacity: 0.1,
-            shadowRadius: 4,
-            elevation: 2,
-          }}>
-          <List.Icon
-            {...props}
-            icon="map-marker"
-            color={COLORS.primary}
-            size={24}
-          />
-        </View>
+        <List.Icon
+          {...props}
+          icon="map-marker"
+          color={COLORS.primary}
+          size={10}
+          style={{marginRight: 4}}
+        />
       )}
       titleStyle={styles.suggestionTitle}
-      style={styles.suggestionItem}
+      style={[
+        styles.suggestionItem,
+        {
+          backgroundColor: 'white',
+          borderLeftWidth: 1,
+          borderLeftColor: COLORS.primary + '40',
+        },
+      ]}
       rippleColor={COLORS.primary + '20'}
       description={item.structured_formatting?.secondary_text}
       descriptionStyle={styles.suggestionDescription}
@@ -341,6 +333,7 @@ const HomeScreen = ({navigation}) => {
               keyExtractor={item => item.place_id}
               keyboardShouldPersistTaps="handled"
               style={styles.suggestionsList}
+              contentContainerStyle={{paddingVertical: 8}}
             />
           </View>
         )}
@@ -361,7 +354,10 @@ const HomeScreen = ({navigation}) => {
             }
             showsVerticalScrollIndicator={false}
             ListEmptyComponent={renderEmptyState}
-            contentContainerStyle={places.length ? {} : styles.emptyContainer}
+            contentContainerStyle={[
+              places.length ? {paddingVertical: 8} : styles.emptyContainer,
+            ]}
+            ItemSeparatorComponent={() => <View style={{height: 12}} />}
           />
         )}
       </View>
@@ -403,6 +399,7 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     marginTop: 8,
+    paddingHorizontal: 16,
   },
   loadingContainer: {
     flex: 1,
@@ -447,7 +444,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 20,
     elevation: 12,
-    shadowColor: '#000',
+    shadowColor: COLORS.primary,
     shadowOffset: {
       width: 0,
       height: 6,
@@ -459,7 +456,7 @@ const styles = StyleSheet.create({
     marginTop: 30,
     marginHorizontal: 16,
     borderWidth: 1,
-    borderColor: 'rgba(0,0,0,0.08)',
+    borderColor: COLORS.primary + '30',
   },
   suggestionsList: {
     flex: 1,
@@ -470,12 +467,12 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     paddingHorizontal: 20,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(0,0,0,0.06)',
+    borderBottomColor: COLORS.primary + '15',
     backgroundColor: 'white',
   },
   suggestionTitle: {
     fontSize: 18,
-    color: '#1a1a1a',
+    color: COLORS.primary,
     marginLeft: 4,
     fontWeight: '600',
     letterSpacing: 0.3,
