@@ -104,7 +104,8 @@ android {
 }
 
 dependencies {
-    // The version of react-native is set by the React Native Gradle Plugin
+        implementation 'com.google.android.gms:play-services-location:20.0.0'
+
     implementation("com.facebook.react:react-android")
 
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}")
@@ -118,6 +119,9 @@ dependencies {
     } else {
         implementation jscFlavor
     }
+    
 }
 
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
+
+apply from: file("../../node_modules/react-native-vector-icons/fonts.gradle")

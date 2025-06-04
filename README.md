@@ -1,79 +1,134 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# Pinzy - Location-Based Search App
 
-# Getting Started
+Pinzy is a React Native mobile application that helps users discover and explore places around them. The app provides features for searching locations, viewing nearby places, and saving favorite locations.
 
->**Note**: Make sure you have completed the [React Native - Environment Setup](https://reactnative.dev/docs/environment-setup) instructions till "Creating a new application" step, before proceeding.
+## Features
 
-## Step 1: Start the Metro Server
+- 🔍 Search for places using Google Places API
+- 📍 View your current location
+- 🗺️ Discover nearby places
+- 📱 Interactive map interface
+- 💾 Save search history
+- 🌐 Location-based recommendations
+- 🎯 Detailed place information
 
-First, you will need to start **Metro**, the JavaScript _bundler_ that ships _with_ React Native.
+## Prerequisites
 
-To start Metro, run the following command from the _root_ of your React Native project:
+Before you begin, ensure you have the following installed:
+
+- Node.js (>= 16)
+- npm or yarn
+- React Native development environment set up
+- iOS Simulator (for iOS development)
+- Android Studio and Android SDK (for Android development)
+
+## Installation
+
+1. Clone the repository:
 
 ```bash
-# using npm
-npm start
-
-# OR using Yarn
-yarn start
+git clone [your-repository-url]
+cd pinzy
 ```
 
-## Step 2: Start your Application
-
-Let Metro Bundler run in its _own_ terminal. Open a _new_ terminal from the _root_ of your React Native project. Run the following command to start your _Android_ or _iOS_ app:
-
-### For Android
+2. Install dependencies:
 
 ```bash
-# using npm
-npm run android
-
-# OR using Yarn
-yarn android
+npm install
+# or
+yarn install
 ```
 
-### For iOS
+3. Install iOS dependencies (iOS only):
 
 ```bash
-# using npm
+cd ios
+pod install
+cd ..
+```
+
+4. Set up environment variables:
+   Create a `.env` file in the root directory and add your Google Places API key:
+
+```
+GOOGLE_PLACES_API_KEY=your_api_key_here
+```
+
+## Running the App
+
+### iOS
+
+```bash
 npm run ios
-
-# OR using Yarn
+# or
 yarn ios
 ```
 
-If everything is set up _correctly_, you should see your new app running in your _Android Emulator_ or _iOS Simulator_ shortly provided you have set up your emulator/simulator correctly.
+### Android
 
-This is one way to run your app — you can also run it directly from within Android Studio and Xcode respectively.
+```bash
+npm run android
+# or
+yarn android
+```
 
-## Step 3: Modifying your App
+## Project Structure
 
-Now that you have successfully run the app, let's modify it.
+```
+src/
+├── components/     # Reusable UI components
+├── navigation/     # Navigation configuration
+├── screens/        # Screen components
+├── services/       # API and other services
+└── utils/         # Utility functions and constants
+```
 
-1. Open `App.tsx` in your text editor of choice and edit some lines.
-2. For **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Developer Menu** (<kbd>Ctrl</kbd> + <kbd>M</kbd> (on Window and Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (on macOS)) to see your changes!
+## Dependencies
 
-   For **iOS**: Hit <kbd>Cmd ⌘</kbd> + <kbd>R</kbd> in your iOS Simulator to reload the app and see your changes!
+### Main Dependencies
 
-## Congratulations! :tada:
+- React Native
+- React Navigation
+- React Native Paper
+- React Native Maps
+- React Native Geolocation Service
+- Google Places API
+- AsyncStorage
 
-You've successfully run and modified your React Native App. :partying_face:
+### Development Dependencies
 
-### Now what?
+- TypeScript
+- ESLint
+- Prettier
+- Jest
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [Introduction to React Native](https://reactnative.dev/docs/getting-started).
+## Contributing
 
-# Troubleshooting
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-If you can't get this to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
+## License
 
-# Learn More
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-To learn more about React Native, take a look at the following resources:
+## Acknowledgments
 
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+- Google Places API for location data
+- React Native community for the amazing tools and libraries
+- All contributors who have helped shape this project
+
+## Support
+
+If you encounter any issues or have questions, please open an issue in the repository.
+
+## Roadmap
+
+- [ ] Add user authentication
+- [ ] Implement place reviews and ratings
+- [ ] Add offline support
+- [ ] Implement place sharing
+- [ ] Add more detailed place information
+- [ ] Implement place categories and filters
