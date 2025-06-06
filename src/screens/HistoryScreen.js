@@ -1,13 +1,15 @@
 import {useFocusEffect} from '@react-navigation/native';
 import React, {useCallback, useState} from 'react';
-import {Alert, FlatList, StyleSheet, View} from 'react-native';
+import {Alert, Animated, FlatList, StyleSheet, View} from 'react-native';
 import {
   ActivityIndicator,
   Button,
   FAB,
   Snackbar,
   Text,
+  useTheme,
 } from 'react-native-paper';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import SearchHistoryItem from '../components/SearchHistoryItem';
 import StorageService from '../services/StorageService';
@@ -18,6 +20,7 @@ const HistoryScreen = ({navigation}) => {
   const [loading, setLoading] = useState(true);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
+  const theme = useTheme();
 
   useFocusEffect(
     useCallback(() => {
@@ -100,16 +103,28 @@ const HistoryScreen = ({navigation}) => {
     setSnackbarVisible(true);
   };
 
-  const renderHistoryItem = ({item}) => (
-    <SearchHistoryItem
-      item={item}
-      onPress={handleItemPress}
-      onDelete={handleDeleteItem}
-    />
+  const renderHistoryItem = ({item, index}) => (
+    <Animated.View
+      style={[
+        styles.itemContainer,
+        {
+          opacity: 1,
+          transform: [{translateY: 0}],
+        },
+      ]}>
+      <SearchHistoryItem
+        item={item}
+        onPress={handleItemPress}
+        onDelete={handleDeleteItem}
+      />
+    </Animated.View>
   );
 
   const renderEmptyState = () => (
     <View style={styles.emptyState}>
+      <View style={styles.emptyIconContainer}>
+        <Icon name="history" size={64} color={COLORS.primary} />
+      </View>
       <Text variant="headlineSmall" style={styles.emptyTitle}>
         No Search History
       </Text>
@@ -119,7 +134,8 @@ const HistoryScreen = ({navigation}) => {
       <Button
         mode="contained"
         onPress={() => navigation.navigate('Home')}
-        style={styles.searchButton}>
+        style={styles.searchButton}
+        contentStyle={styles.searchButtonContent}>
         Start Searching
       </Button>
     </View>
@@ -137,14 +153,16 @@ const HistoryScreen = ({navigation}) => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text variant="headlineSmall" style={styles.headerTitle}>
-          Search History
-        </Text>
-        {history.length > 0 && (
-          <Text variant="bodyMedium" style={styles.headerSubtitle}>
-            {history.length} place{history.length !== 1 ? 's' : ''} saved
+        <View style={styles.headerContent}>
+          <Text variant="headlineSmall" style={styles.headerTitle}>
+            Search History
           </Text>
-        )}
+          {history.length > 0 && (
+            <Text variant="bodyMedium" style={styles.headerSubtitle}>
+              {history.length} place{history.length !== 1 ? 's' : ''} saved
+            </Text>
+          )}
+        </View>
       </View>
 
       <FlatList
@@ -157,7 +175,10 @@ const HistoryScreen = ({navigation}) => {
         }
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={renderEmptyState}
-        contentContainerStyle={history.length ? {} : styles.emptyContainer}
+        contentContainerStyle={[
+          styles.listContent,
+          history.length === 0 && styles.emptyContainer,
+        ]}
       />
 
       {history.length > 0 && (
@@ -166,13 +187,21 @@ const HistoryScreen = ({navigation}) => {
           style={styles.fab}
           onPress={handleClearAll}
           label="Clear All"
+          mode="elevated"
+          color={COLORS.onPrimary}
+          backgroundColor={COLORS.error}
         />
       )}
 
       <Snackbar
         visible={snackbarVisible}
         onDismiss={() => setSnackbarVisible(false)}
-        duration={3000}>
+        duration={3000}
+        style={styles.snackbar}
+        action={{
+          label: 'Dismiss',
+          onPress: () => setSnackbarVisible(false),
+        }}>
         {snackbarMessage}
       </Snackbar>
     </View>
@@ -185,55 +214,88 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.background,
   },
   header: {
-    padding: 16,
     backgroundColor: COLORS.surface,
     elevation: 2,
+    paddingTop: 16,
+    paddingBottom: 8,
+  },
+  headerContent: {
+    paddingHorizontal: 16,
   },
   headerTitle: {
     fontWeight: 'bold',
     color: COLORS.onSurface,
   },
   headerSubtitle: {
-    color: '#666',
+    color: COLORS.textSecondary,
     marginTop: 4,
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: COLORS.background,
   },
   loadingText: {
     marginTop: 16,
-    color: COLORS.onBackground,
+    color: COLORS.textSecondary,
+  },
+  listContent: {
+    paddingVertical: 8,
+  },
+  itemContainer: {
+    marginBottom: 8,
   },
   emptyContainer: {
     flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   emptyState: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 32,
+    padding: 24,
+  },
+  emptyIconContainer: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    backgroundColor: COLORS.primary + '15',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 24,
   },
   emptyTitle: {
-    textAlign: 'center',
+    fontWeight: 'bold',
+    color: COLORS.onSurface,
     marginBottom: 8,
-    color: COLORS.onBackground,
+    textAlign: 'center',
   },
   emptySubtitle: {
+    color: COLORS.textSecondary,
     textAlign: 'center',
-    color: '#666',
     marginBottom: 24,
   },
   searchButton: {
+    borderRadius: 12,
+  },
+  searchButtonContent: {
     paddingHorizontal: 24,
+    paddingVertical: 8,
   },
   fab: {
     position: 'absolute',
     margin: 16,
     right: 0,
     bottom: 0,
-    backgroundColor: COLORS.error,
+    borderRadius: 16,
+  },
+  snackbar: {
+    bottom: 16,
+    left: 16,
+    right: 16,
+    borderRadius: 12,
   },
 });
 

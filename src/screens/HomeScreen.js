@@ -14,6 +14,7 @@ import {
 import Geolocation from 'react-native-geolocation-service';
 import {
   ActivityIndicator,
+  Card,
   FAB,
   List,
   Searchbar,
@@ -36,11 +37,13 @@ const HomeScreen = ({navigation}) => {
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [searchHistory, setSearchHistory] = useState([]);
 
   useEffect(() => {
     const initializeLocation = async () => {
       try {
         await requestLocationPermission();
+        await loadSearchHistory();
       } catch (error) {
         console.warn('Location initialization failed:', error);
         showSnackbar('Location services are not available');
@@ -49,6 +52,15 @@ const HomeScreen = ({navigation}) => {
 
     initializeLocation();
   }, []);
+
+  const loadSearchHistory = async () => {
+    try {
+      const history = await StorageService.getSearchHistory();
+      setSearchHistory(history);
+    } catch (error) {
+      console.error('Error loading search history:', error);
+    }
+  };
 
   const requestLocationPermission = async () => {
     if (Platform.OS === 'android') {
@@ -219,6 +231,31 @@ const HomeScreen = ({navigation}) => {
     setSnackbarVisible(true);
   };
 
+  const handleHistorySearch = async item => {
+    setSearchQuery(item.name);
+    setShowSuggestions(false);
+    setLoading(true);
+
+    try {
+      const results = await GooglePlacesService.searchPlaces(item.name);
+      setPlaces(results || []);
+
+      if (!results || results.length === 0) {
+        showSnackbar('No places found for your search');
+      }
+    } catch (error) {
+      console.error('Search error:', error);
+      showSnackbar('Error searching places. Please try again.');
+      setPlaces([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleHistoryViewMap = item => {
+    navigation.navigate('MapDetail', {place: item});
+  };
+
   const renderPlaceItem = ({item}) => (
     <PlaceItem
       place={item}
@@ -227,16 +264,116 @@ const HomeScreen = ({navigation}) => {
     />
   );
 
-  const renderEmptyState = () => (
-    <View style={styles.emptyState}>
-      <Text variant="headlineSmall" style={styles.emptyTitle}>
-        Discover Places
-      </Text>
-      <Text variant="bodyLarge" style={styles.emptySubtitle}>
-        Search for restaurants, hotels, attractions, and more
-      </Text>
-    </View>
+  const renderHistoryItem = ({item}) => (
+    <Card style={styles.historyCard} mode="elevated">
+      <Card.Content style={styles.historyCardContent}>
+        <View style={styles.historyIconContainer}>
+          <Icon name="history" size={24} color={COLORS.primary} />
+        </View>
+        <View style={styles.historyTextContainer}>
+          <Text
+            variant="titleMedium"
+            numberOfLines={1}
+            style={styles.historyName}>
+            {item.name}
+          </Text>
+          <Text
+            variant="bodySmall"
+            style={styles.historyAddress}
+            numberOfLines={1}>
+            {item.vicinity || item.formatted_address}
+          </Text>
+        </View>
+      </Card.Content>
+      <Card.Actions style={styles.historyCardActions}>
+        <Pressable
+          onPress={() => handleHistorySearch(item)}
+          style={styles.historyAction}>
+          <Icon name="search" size={20} color={COLORS.primary} />
+          <Text style={styles.historyActionText}>Search</Text>
+        </Pressable>
+        <View style={styles.historyActionDivider} />
+        <Pressable
+          onPress={() => handleHistoryViewMap(item)}
+          style={styles.historyAction}>
+          <Icon name="map" size={20} color={COLORS.primary} />
+          <Text style={styles.historyActionText}>View Map</Text>
+        </Pressable>
+      </Card.Actions>
+    </Card>
   );
+
+  const renderContent = () => {
+    if (loading) {
+      return (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={COLORS.primary} />
+          <Text style={styles.loadingText}>Searching places...</Text>
+        </View>
+      );
+    }
+
+    if (places.length > 0) {
+      return (
+        <FlatList
+          data={places}
+          renderItem={renderPlaceItem}
+          keyExtractor={item =>
+            String(item?.place_id || item?.id || Math.random())
+          }
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{paddingVertical: 8}}
+          ItemSeparatorComponent={() => <View style={{height: 12}} />}
+        />
+      );
+    }
+
+    return (
+      <View style={styles.historyContainer}>
+        <View style={styles.historyHeader}>
+          <Text variant="headlineSmall" style={styles.historyTitle}>
+            Recent Searches
+          </Text>
+          {searchHistory.length > 0 && (
+            <Pressable
+              onPress={() => {
+                StorageService.clearSearchHistory();
+                setSearchHistory([]);
+              }}
+              style={styles.clearHistoryButton}>
+              <Icon name="delete-sweep" size={20} color={COLORS.primary} />
+              <Text style={styles.clearHistoryText}>Clear All</Text>
+            </Pressable>
+          )}
+        </View>
+        {searchHistory.length > 0 ? (
+          <FlatList
+            data={searchHistory}
+            renderItem={renderHistoryItem}
+            keyExtractor={item => String(item.place_id)}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.historyList}
+            ItemSeparatorComponent={() => <View style={{height: 12}} />}
+          />
+        ) : (
+          <View style={styles.emptyState}>
+            <Icon
+              name="search"
+              size={48}
+              color={COLORS.primary}
+              style={styles.emptyIcon}
+            />
+            <Text variant="headlineSmall" style={styles.emptyTitle}>
+              Discover Places
+            </Text>
+            <Text variant="bodyLarge" style={styles.emptySubtitle}>
+              Search for restaurants, hotels, attractions, and more
+            </Text>
+          </View>
+        )}
+      </View>
+    );
+  };
 
   // Debounced function for getting autocomplete suggestions
   const getSuggestions = useCallback(
@@ -281,23 +418,6 @@ const HomeScreen = ({navigation}) => {
     }
   };
 
-  const ClearButton = () => {
-    console.log('Rendering ClearButton');
-    return (
-      <Pressable
-        style={({pressed}) => [styles.clearButton, pressed && {opacity: 0.7}]}
-        onPress={() => {
-          console.log('ClearButton pressed');
-          setSearchQuery('');
-          setShowSuggestions(false);
-          setSuggestions([]);
-        }}
-        hitSlop={10}>
-        <Icon name="close" size={20} color={COLORS.primary} />
-      </Pressable>
-    );
-  };
-
   return (
     <KeyboardAvoidingView
       style={styles.container}
@@ -314,10 +434,11 @@ const HomeScreen = ({navigation}) => {
           style={styles.searchbar}
           icon="magnify"
           clearIcon="close"
-          onIconPress={() => {
+          onClearIconPress={() => {
             setSearchQuery('');
             setShowSuggestions(false);
             setSuggestions([]);
+            setPlaces([]);
           }}
           onFocus={() => setShowSuggestions(true)}
         />
@@ -363,28 +484,7 @@ const HomeScreen = ({navigation}) => {
         </View>
       )}
 
-      <View style={styles.content}>
-        {loading ? (
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color={COLORS.primary} />
-            <Text style={styles.loadingText}>Searching places...</Text>
-          </View>
-        ) : (
-          <FlatList
-            data={places}
-            renderItem={renderPlaceItem}
-            keyExtractor={item =>
-              String(item?.place_id || item?.id || Math.random())
-            }
-            showsVerticalScrollIndicator={false}
-            ListEmptyComponent={renderEmptyState}
-            contentContainerStyle={[
-              places.length ? {paddingVertical: 8} : styles.emptyContainer,
-            ]}
-            ItemSeparatorComponent={() => <View style={{height: 12}} />}
-          />
-        )}
-      </View>
+      <View style={styles.content}>{renderContent()}</View>
 
       <FAB
         icon="near-me"
@@ -417,12 +517,12 @@ const styles = StyleSheet.create({
   },
   searchbar: {
     elevation: 0,
-    backgroundColor: COLORS.background,
-    borderRadius: 8,
+    backgroundColor: COLORS.surface,
+    borderWidth: 1,
+    borderColor: COLORS.border,
   },
   content: {
     flex: 1,
-    marginTop: 8,
     paddingHorizontal: 16,
   },
   loadingContainer: {
@@ -431,88 +531,154 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   loadingText: {
-    marginTop: 16,
-    color: COLORS.onBackground,
-  },
-  emptyContainer: {
-    flex: 1,
+    marginTop: 12,
+    color: COLORS.text,
   },
   emptyState: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 32,
+    paddingHorizontal: 24,
+  },
+  emptyIcon: {
+    marginBottom: 16,
+    opacity: 0.8,
   },
   emptyTitle: {
-    textAlign: 'center',
+    color: COLORS.text,
     marginBottom: 8,
-    color: COLORS.onBackground,
+    textAlign: 'center',
+    fontWeight: '600',
   },
   emptySubtitle: {
+    color: COLORS.textSecondary,
     textAlign: 'center',
-    color: '#666',
+  },
+  emptyContainer: {
+    flex: 1,
   },
   fab: {
     position: 'absolute',
     margin: 16,
     right: 0,
     bottom: 0,
-    backgroundColor: COLORS.secondary,
-    elevation: 4,
+    backgroundColor: COLORS.primary,
   },
   suggestionsWrapper: {
     position: 'absolute',
-    top: 0,
+    top: 80,
     left: 0,
     right: 0,
     zIndex: 1000,
-    paddingTop: 80,
     paddingHorizontal: 16,
   },
   suggestionsContainer: {
     backgroundColor: 'white',
-    borderRadius: 20,
-    elevation: 12,
-    shadowColor: COLORS.primary,
-    shadowOffset: {
-      width: 0,
-      height: 6,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 16,
-    height: 300,
-    borderWidth: 1,
-    borderColor: COLORS.primary + '30',
+    borderRadius: 8,
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    maxHeight: 300,
   },
   suggestionsList: {
-    flex: 1,
+    maxHeight: 300,
   },
   suggestionsContent: {
     paddingVertical: 8,
   },
   suggestionItem: {
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.primary + '15',
-    backgroundColor: 'white',
+    paddingVertical: 4,
   },
   suggestionTitle: {
-    fontSize: 16,
-    color: COLORS.primary,
-    marginLeft: 4,
-    fontWeight: '600',
+    fontSize: 14,
+    color: COLORS.text,
   },
   suggestionDescription: {
-    fontSize: 14,
-    color: '#666',
-    marginLeft: 4,
-    marginTop: 4,
+    fontSize: 12,
+    color: COLORS.textSecondary,
   },
-  clearButton: {
+  historyContainer: {
+    flex: 1,
+    paddingTop: 16,
+  },
+  historyHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    marginBottom: 16,
+  },
+  historyTitle: {
+    color: COLORS.text,
+    fontWeight: '600',
+  },
+  clearHistoryButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
     padding: 8,
-    marginRight: 8,
-    backgroundColor: 'transparent',
+  },
+  clearHistoryText: {
+    color: COLORS.primary,
+    marginLeft: 4,
+    fontSize: 14,
+  },
+  historyCard: {
+    marginHorizontal: 16,
+    marginVertical: 4,
+    borderRadius: 12,
+    elevation: 2,
+  },
+  historyCardContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+  },
+  historyIconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: COLORS.primary + '15',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  historyTextContainer: {
+    flex: 1,
+  },
+  historyName: {
+    color: COLORS.text,
+    fontWeight: '500',
+  },
+  historyAddress: {
+    color: COLORS.textSecondary,
+    marginTop: 2,
+  },
+  historyCardActions: {
+    borderTopWidth: 1,
+    borderTopColor: COLORS.border,
+    paddingVertical: 8,
+  },
+  historyAction: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 8,
+  },
+  historyActionText: {
+    marginLeft: 4,
+    color: COLORS.primary,
+    fontSize: 14,
+  },
+  historyActionDivider: {
+    width: 1,
+    height: '100%',
+    backgroundColor: COLORS.border,
+  },
+  historyList: {
+    paddingBottom: 16,
   },
 });
 
