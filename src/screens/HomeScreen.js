@@ -6,6 +6,8 @@ import {
   KeyboardAvoidingView,
   PermissionsAndroid,
   Platform,
+  Pressable,
+  ScrollView,
   StyleSheet,
   View,
 } from 'react-native';
@@ -19,7 +21,7 @@ import {
   Text,
 } from 'react-native-paper';
 import {PERMISSIONS, request, RESULTS} from 'react-native-permissions';
-
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import PlaceItem from '../components/PlaceItem';
 import GooglePlacesService from '../services/GooglePlacesService';
 import StorageService from '../services/StorageService';
@@ -279,33 +281,22 @@ const HomeScreen = ({navigation}) => {
     }
   };
 
-  const renderSuggestion = ({item}) => (
-    <List.Item
-      title={item.description}
-      onPress={() => handleSuggestionPress(item)}
-      left={props => (
-        <List.Icon
-          {...props}
-          icon="map-marker"
-          color={COLORS.primary}
-          size={10}
-          style={{marginRight: 4}}
-        />
-      )}
-      titleStyle={styles.suggestionTitle}
-      style={[
-        styles.suggestionItem,
-        {
-          backgroundColor: 'white',
-          borderLeftWidth: 1,
-          borderLeftColor: COLORS.primary + '40',
-        },
-      ]}
-      rippleColor={COLORS.primary + '20'}
-      description={item.structured_formatting?.secondary_text}
-      descriptionStyle={styles.suggestionDescription}
-    />
-  );
+  const ClearButton = () => {
+    console.log('Rendering ClearButton');
+    return (
+      <Pressable
+        style={({pressed}) => [styles.clearButton, pressed && {opacity: 0.7}]}
+        onPress={() => {
+          console.log('ClearButton pressed');
+          setSearchQuery('');
+          setShowSuggestions(false);
+          setSuggestions([]);
+        }}
+        hitSlop={10}>
+        <Icon name="close" size={20} color={COLORS.primary} />
+      </Pressable>
+    );
+  };
 
   return (
     <KeyboardAvoidingView
@@ -323,21 +314,54 @@ const HomeScreen = ({navigation}) => {
           style={styles.searchbar}
           icon="magnify"
           clearIcon="close"
+          onIconPress={() => {
+            setSearchQuery('');
+            setShowSuggestions(false);
+            setSuggestions([]);
+          }}
           onFocus={() => setShowSuggestions(true)}
         />
-        {showSuggestions && suggestions.length > 0 && (
-          <View style={styles.suggestionsContainer}>
-            <FlatList
-              data={suggestions}
-              renderItem={renderSuggestion}
-              keyExtractor={item => item.place_id}
-              keyboardShouldPersistTaps="handled"
-              style={styles.suggestionsList}
-              contentContainerStyle={{paddingVertical: 8}}
-            />
-          </View>
-        )}
       </View>
+      {showSuggestions && suggestions.length > 0 && (
+        <View style={styles.suggestionsWrapper}>
+          <View style={styles.suggestionsContainer}>
+            <ScrollView
+              style={styles.suggestionsList}
+              contentContainerStyle={styles.suggestionsContent}
+              showsVerticalScrollIndicator={true}
+              nestedScrollEnabled={true}>
+              {suggestions.map(item => (
+                <List.Item
+                  key={item.place_id}
+                  title={item.description}
+                  onPress={() => handleSuggestionPress(item)}
+                  left={props => (
+                    <List.Icon
+                      {...props}
+                      icon="map-marker"
+                      color={COLORS.primary}
+                      size={10}
+                      style={{marginRight: 4}}
+                    />
+                  )}
+                  titleStyle={styles.suggestionTitle}
+                  style={[
+                    styles.suggestionItem,
+                    {
+                      backgroundColor: 'white',
+                      borderLeftWidth: 1,
+                      borderLeftColor: COLORS.primary + '40',
+                    },
+                  ]}
+                  rippleColor={COLORS.primary + '20'}
+                  description={item.structured_formatting?.secondary_text}
+                  descriptionStyle={styles.suggestionDescription}
+                />
+              ))}
+            </ScrollView>
+          </View>
+        </View>
+      )}
 
       <View style={styles.content}>
         {loading ? (
@@ -436,11 +460,16 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.secondary,
     elevation: 4,
   },
-  suggestionsContainer: {
+  suggestionsWrapper: {
     position: 'absolute',
-    top: '100%',
+    top: 0,
     left: 0,
     right: 0,
+    zIndex: 1000,
+    paddingTop: 80,
+    paddingHorizontal: 16,
+  },
+  suggestionsContainer: {
     backgroundColor: 'white',
     borderRadius: 20,
     elevation: 12,
@@ -451,39 +480,39 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.2,
     shadowRadius: 16,
-    zIndex: 1000,
-    maxHeight: 300,
-    marginTop: 30,
-    marginHorizontal: 16,
+    height: 300,
     borderWidth: 1,
     borderColor: COLORS.primary + '30',
   },
   suggestionsList: {
     flex: 1,
-    borderRadius: 20,
-    overflow: 'hidden',
+  },
+  suggestionsContent: {
+    paddingVertical: 8,
   },
   suggestionItem: {
-    paddingVertical: 16,
+    paddingVertical: 12,
     paddingHorizontal: 20,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.primary + '15',
     backgroundColor: 'white',
   },
   suggestionTitle: {
-    fontSize: 18,
+    fontSize: 16,
     color: COLORS.primary,
     marginLeft: 4,
     fontWeight: '600',
-    letterSpacing: 0.3,
   },
   suggestionDescription: {
-    fontSize: 15,
+    fontSize: 14,
     color: '#666',
     marginLeft: 4,
-    marginTop: 6,
-    fontWeight: '400',
-    letterSpacing: 0.2,
+    marginTop: 4,
+  },
+  clearButton: {
+    padding: 8,
+    marginRight: 8,
+    backgroundColor: 'transparent',
   },
 });
 
