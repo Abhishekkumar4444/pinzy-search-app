@@ -1,13 +1,17 @@
-import React, {useState, useEffect} from 'react';
-import {StyleSheet, View, Alert} from 'react-native';
-import {Text, Button, Card, Chip} from 'react-native-paper';
+import React, {useEffect, useState} from 'react';
+import {Alert, Platform, StyleSheet, View} from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
+import {Button, Card, Chip, Text} from 'react-native-paper';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 import MapComponent from '../components/MapComponent';
 import GooglePlacesService from '../services/GooglePlacesService';
 import {COLORS} from '../utils/constants';
 
+const TAB_BAR_HEIGHT = 49; // Standard tab bar height
+
 const MapScreen = ({route, navigation}) => {
+  const insets = useSafeAreaInsets();
   const [region, setRegion] = useState({
     latitude: 37.78825,
     longitude: -122.4324,
@@ -96,10 +100,17 @@ const MapScreen = ({route, navigation}) => {
   };
 
   const renderPlaceDetails = () => {
-    if (!selectedPlace) return null;
+    if (!selectedPlace) {
+      return null;
+    }
+
+    const bottomPadding = Platform.select({
+      ios: insets.bottom + TAB_BAR_HEIGHT + 16,
+      android: TAB_BAR_HEIGHT + 50,
+    });
 
     return (
-      <Card style={styles.detailsCard}>
+      <Card style={[styles.detailsCard, {marginBottom: bottomPadding}]}>
         <Card.Content>
           <Text variant="titleLarge" style={styles.placeName}>
             {selectedPlace.name}
@@ -186,23 +197,34 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
+    paddingHorizontal: 16,
   },
   detailsCard: {
-    margin: 16,
     elevation: 8,
+    borderRadius: 16,
+    backgroundColor: 'white',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: -2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
   },
   placeName: {
     fontWeight: 'bold',
     marginBottom: 4,
+    color: COLORS.text,
   },
   placeAddress: {
-    color: '#666',
+    color: COLORS.textSecondary,
     marginBottom: 12,
   },
   placeInfo: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     marginBottom: 12,
+    gap: 8,
   },
   infoChip: {
     marginRight: 8,
@@ -211,10 +233,10 @@ const styles = StyleSheet.create({
   actions: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    gap: 8,
   },
   actionButton: {
     flex: 1,
-    marginHorizontal: 4,
   },
 });
 

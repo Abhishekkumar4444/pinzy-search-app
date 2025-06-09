@@ -7,7 +7,6 @@ import {
   PermissionsAndroid,
   Platform,
   Pressable,
-  ScrollView,
   StyleSheet,
   View,
 } from 'react-native';
@@ -16,7 +15,6 @@ import {
   ActivityIndicator,
   Card,
   FAB,
-  List,
   Searchbar,
   Snackbar,
   Text,
@@ -24,6 +22,7 @@ import {
 import {PERMISSIONS, request, RESULTS} from 'react-native-permissions';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import PlaceItem from '../components/PlaceItem';
+import SuggestionList from '../components/SuggestionList';
 import GooglePlacesService from '../services/GooglePlacesService';
 import StorageService from '../services/StorageService';
 import {COLORS} from '../utils/constants';
@@ -443,46 +442,13 @@ const HomeScreen = ({navigation}) => {
           onFocus={() => setShowSuggestions(true)}
         />
       </View>
-      {showSuggestions && suggestions.length > 0 && (
-        <View style={styles.suggestionsWrapper}>
-          <View style={styles.suggestionsContainer}>
-            <ScrollView
-              style={styles.suggestionsList}
-              contentContainerStyle={styles.suggestionsContent}
-              showsVerticalScrollIndicator={true}
-              nestedScrollEnabled={true}>
-              {suggestions.map(item => (
-                <List.Item
-                  key={item.place_id}
-                  title={item.description}
-                  onPress={() => handleSuggestionPress(item)}
-                  left={props => (
-                    <List.Icon
-                      {...props}
-                      icon="map-marker"
-                      color={COLORS.primary}
-                      size={10}
-                      style={{marginRight: 4}}
-                    />
-                  )}
-                  titleStyle={styles.suggestionTitle}
-                  style={[
-                    styles.suggestionItem,
-                    {
-                      backgroundColor: 'white',
-                      borderLeftWidth: 1,
-                      borderLeftColor: COLORS.primary + '40',
-                    },
-                  ]}
-                  rippleColor={COLORS.primary + '20'}
-                  description={item.structured_formatting?.secondary_text}
-                  descriptionStyle={styles.suggestionDescription}
-                />
-              ))}
-            </ScrollView>
-          </View>
-        </View>
-      )}
+
+      <SuggestionList
+        suggestions={suggestions}
+        onSuggestionPress={handleSuggestionPress}
+        visible={showSuggestions && suggestions.length > 0}
+        searchQuery={searchQuery}
+      />
 
       <View style={styles.content}>{renderContent()}</View>
 
@@ -520,6 +486,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.surface,
     borderWidth: 1,
     borderColor: COLORS.border,
+    borderRadius: 12,
   },
   content: {
     flex: 1,
@@ -554,50 +521,13 @@ const styles = StyleSheet.create({
     color: COLORS.textSecondary,
     textAlign: 'center',
   },
-  emptyContainer: {
-    flex: 1,
-  },
   fab: {
     position: 'absolute',
     margin: 16,
     right: 0,
     bottom: 0,
     backgroundColor: COLORS.primary,
-  },
-  suggestionsWrapper: {
-    position: 'absolute',
-    top: 80,
-    left: 0,
-    right: 0,
-    zIndex: 1000,
-    paddingHorizontal: 16,
-  },
-  suggestionsContainer: {
-    backgroundColor: 'white',
-    borderRadius: 8,
-    elevation: 4,
-    shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    maxHeight: 300,
-  },
-  suggestionsList: {
-    maxHeight: 300,
-  },
-  suggestionsContent: {
-    paddingVertical: 8,
-  },
-  suggestionItem: {
-    paddingVertical: 4,
-  },
-  suggestionTitle: {
-    fontSize: 14,
-    color: COLORS.text,
-  },
-  suggestionDescription: {
-    fontSize: 12,
-    color: COLORS.textSecondary,
+    borderRadius: 16,
   },
   historyContainer: {
     flex: 1,
@@ -607,7 +537,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 16,
     marginBottom: 16,
   },
   historyTitle: {
@@ -622,7 +551,6 @@ const styles = StyleSheet.create({
   clearHistoryText: {
     color: COLORS.primary,
     marginLeft: 4,
-    fontSize: 14,
   },
   historyCard: {
     marginHorizontal: 16,

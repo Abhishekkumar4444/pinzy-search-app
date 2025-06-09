@@ -115,9 +115,9 @@ const styles = StyleSheet.create({
     left: 16,
     right: 16,
     elevation: 0,
-    backgroundColor: COLORS.surface,
+    backgroundColor: '#374151',
     borderRadius: 16,
-    height: 60,
+    height: 70,
     borderTopWidth: 0,
     shadowColor: COLORS.primary,
     shadowOffset: {
