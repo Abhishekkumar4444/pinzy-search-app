@@ -1,123 +1,114 @@
-# Pinzy - Location-Based Search App
+# Pinzy Search App
 
-Pinzy is a React Native mobile application that helps users discover and explore places around them. The app provides features for searching locations, viewing nearby places, and saving favorite locations.
+A modern React Native application for searching and discovering places using Google Places API.
 
 ## Features
 
-- 🔍 Search for places using Google Places API
-- 📍 View your current location
-- 🗺️ Discover nearby places
-- 📱 Interactive map interface
-- 💾 Save search history
-- 🌐 Location-based recommendations
-- 🎯 Detailed place information
+- 🔍 Real-time place search with Google Places API
+- 🗺️ Interactive map display with markers
+- 📍 Location-based search
+- 📱 Responsive and modern UI
+- 🌙 Dark/Light theme support
+- 📋 Search history management
+- 🔄 Offline support for search history
+- 🎯 Accurate place details and information
 
-## Screenshots
+## Technical Stack
 
-<div align="center">
-  <img src="src/assets/1.png" alt="Home Screen" width="200"/>
-  <img src="src/assets/2.png" alt="Search Results" width="200"/>
-  <img src="src/assets/3.png" alt="Map View" width="200"/>
-  <img src="src/assets/4.png" alt="Place Details" width="200"/>
-  <img src="src/assets/5.png" alt="Nearby Places" width="200"/>
-</div>
+- React Native
+- TypeScript
+- Google Maps & Places API
+- React Navigation
+- React Native Paper
+- AsyncStorage for local storage
+- Axios for API calls
 
 ## Prerequisites
 
-Before you begin, ensure you have the following installed:
+- Node.js >= 16
+- React Native development environment setup
+- Google Maps API key
+- Google Places API key
 
-- Node.js (>= 16)
-- npm or yarn
-- React Native development environment set up
-- iOS Simulator (for iOS development)
-- Android Studio and Android SDK (for Android development)
-
-## Installation
+## Setup Instructions
 
 1. Clone the repository:
 
 ```bash
-git clone [your-repository-url]
-cd pinzy
+git clone https://github.com/yourusername/pinzy-search-app.git
+cd pinzy-search-app
 ```
 
 2. Install dependencies:
 
 ```bash
 npm install
-# or
-yarn install
 ```
 
-3. Install iOS dependencies (iOS only):
+3. Create a `.env` file in the root directory with the following variables:
+
+```
+GOOGLE_MAPS_API_KEY=your_google_maps_api_key_here
+GOOGLE_PLACES_API_KEY=your_google_places_api_key_here
+BASE_URL=https://maps.googleapis.com/maps/api/place
+APP_NAME=Pinzy Search
+APP_ENV=development
+```
+
+4. iOS Setup:
 
 ```bash
 cd ios
 pod install
 cd ..
-```
-
-4. Set up environment variables:
-   Create a `.env` file in the root directory and add your Google Places API key:
-
-```
-GOOGLE_PLACES_API_KEY=your_api_key_here
-```
-
-## Running the App
-
-### iOS
-
-```bash
 npm run ios
-# or
-yarn ios
 ```
 
-### Android
+5. Android Setup:
 
 ```bash
 npm run android
-# or
-yarn android
 ```
 
 ## Project Structure
 
 ```
 src/
+├── assets/         # Images, fonts, and other static assets
 ├── components/     # Reusable UI components
+├── context/        # React Context providers
 ├── navigation/     # Navigation configuration
 ├── screens/        # Screen components
 ├── services/       # API and other services
-└── utils/         # Utility functions and constants
+├── types/          # TypeScript type definitions
+└── utils/          # Utility functions and constants
 ```
 
-## Dependencies
+## Architecture
 
-### Main Dependencies
+The application follows Clean Architecture principles with a clear separation of concerns:
 
-- React Native
-- React Navigation
-- React Native Paper
-- React Native Maps
-- React Native Geolocation Service
-- Google Places API
-- AsyncStorage
+- **Presentation Layer**: Screens and Components
+- **Domain Layer**: Services and Business Logic
+- **Data Layer**: API calls and Local Storage
 
-### Development Dependencies
+## Best Practices Implemented
 
-- TypeScript
-- ESLint
-- Prettier
-- Jest
+- TypeScript for type safety
+- Environment variables for configuration
+- Proper error handling
+- Loading states and error states
+- Responsive design
+- Performance optimization
+- Code modularity
+- Clean code principles
 
 ## Contributing
 
 1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
 ## License
@@ -126,9 +117,10 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Acknowledgments
 
-- Google Places API for location data
-- React Native community for the amazing tools and libraries
-- All contributors who have helped shape this project
+- Google Maps Platform
+- React Native community
+- React Navigation
+- React Native Paper
 
 ## Support
 

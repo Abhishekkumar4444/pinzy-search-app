@@ -1,16 +1,15 @@
-import React, {useEffect, useState} from 'react';
-import {Alert, Platform, StyleSheet, View} from 'react-native';
+import { RouteProp } from '@react-navigation/native';
+import React, { useEffect, useState } from 'react';
+import { Alert, Platform, StyleSheet, View } from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
-import {Button, Card, Chip, Text} from 'react-native-paper';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import { Button, Card, Chip, Text } from 'react-native-paper';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import MapComponent from '../components/MapComponent';
 import GooglePlacesService from '../services/GooglePlacesService';
-import {COLORS} from '../utils/constants';
+import { COLORS, TAB_BAR_HEIGHT } from '../utils/constants';
 
-const TAB_BAR_HEIGHT = 49; // Standard tab bar height
-
-const MapScreen = ({route, navigation}) => {
+const MapScreen = ({ route }: { route?: RouteProp<any, any> }) => {
   const insets = useSafeAreaInsets();
   const [region, setRegion] = useState({
     latitude: 37.78825,
@@ -18,9 +17,10 @@ const MapScreen = ({route, navigation}) => {
     latitudeDelta: 0.0922,
     longitudeDelta: 0.0421,
   });
-  const [markers, setMarkers] = useState([]);
-  const [selectedPlace, setSelectedPlace] = useState(null);
-  const [nearbyPlaces, setNearbyPlaces] = useState([]);
+
+  const [markers, setMarkers] = useState<Place[]>([]);
+  const [selectedPlace, setSelectedPlace] = useState<Place | null>(null);
+  const [nearbyPlaces, setNearbyPlaces] = useState<Place[]>([]);
 
   useEffect(() => {
     if (route?.params?.place) {
@@ -33,10 +33,7 @@ const MapScreen = ({route, navigation}) => {
         latitudeDelta: 0.01,
         longitudeDelta: 0.01,
       });
-      loadNearbyPlaces(
-        place.geometry.location.lat,
-        place.geometry.location.lng,
-      );
+      loadNearbyPlaces(place.geometry.location.lat, place.geometry.location.lng);
     } else {
       getCurrentLocation();
     }
@@ -52,50 +49,67 @@ const MapScreen = ({route, navigation}) => {
           longitudeDelta: 0.005,
         };
         setRegion(newRegion);
-        loadNearbyPlaces(position.coords.latitude, position.coords.longitude);
+
+        // Create a current location place object
+        const currentLocationPlace: Place = {
+          name: 'Current Location',
+          place_id: 'current_location',
+          formatted_address: 'Your current location',
+          geometry: {
+            location: {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude,
+            },
+          },
+        };
+
+        setSelectedPlace(currentLocationPlace);
+        setMarkers([currentLocationPlace]);
+        loadNearbyPlaces(position?.coords?.latitude, position?.coords?.longitude);
       },
       error => {
         console.error('Location error:', error);
         Alert.alert('Error', 'Unable to get current location');
       },
-      {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
     );
   };
 
-  const loadNearbyPlaces = async (latitude, longitude) => {
+  const loadNearbyPlaces = async (latitude: number, longitude: number, radius = 5000) => {
     try {
-      const places = await GooglePlacesService.getNearbyPlaces(
-        latitude,
-        longitude,
-        5000,
-      );
+      const places = await GooglePlacesService.getNearbyPlaces(latitude, longitude, radius);
       setNearbyPlaces(places);
       if (!route?.params?.place) {
         setMarkers(places);
       }
     } catch (error) {
       console.error('Error loading nearby places:', error);
+      Alert.alert('Error', 'Failed to load nearby places. Please try again.', [{ text: 'OK' }]);
     }
   };
 
-  const handleMarkerPress = marker => {
+  const handleMarkerPress = (marker: Marker): void => {
     setSelectedPlace(marker);
   };
 
-  const handleRegionChange = newRegion => {
+  const handleRegionChange = (newRegion: Region): void => {
     setRegion(newRegion);
   };
 
   const showAllPlaces = () => {
-    const allPlaces = selectedPlace
-      ? [selectedPlace, ...nearbyPlaces]
-      : nearbyPlaces;
+    const allPlaces = selectedPlace ? [selectedPlace, ...nearbyPlaces] : nearbyPlaces;
     setMarkers(allPlaces);
   };
 
   const showOnlySelected = () => {
     if (selectedPlace) {
       setMarkers([selectedPlace]);
+      setRegion({
+        latitude: selectedPlace.geometry.location.lat,
+        longitude: selectedPlace.geometry.location.lng,
+        latitudeDelta: 0.005,
+        longitudeDelta: 0.005,
+      });
     }
   };
 
@@ -110,7 +124,7 @@ const MapScreen = ({route, navigation}) => {
     });
 
     return (
-      <Card style={[styles.detailsCard, {marginBottom: bottomPadding}]}>
+      <Card style={[styles.detailsCard, { marginBottom: bottomPadding }]}>
         <Card.Content>
           <Text variant="titleLarge" style={styles.placeName}>
             {selectedPlace.name}
@@ -121,12 +135,21 @@ const MapScreen = ({route, navigation}) => {
 
           <View style={styles.placeInfo}>
             {selectedPlace.rating && (
-              <Chip icon="star" mode="outlined" compact style={styles.infoChip}>
+              <Chip
+                icon="star"
+                mode="outlined"
+                compact
+                style={[styles.infoChip, { backgroundColor: COLORS.closedStatusBackground }]}
+              >
                 {selectedPlace.rating.toFixed(1)}
               </Chip>
             )}
             {selectedPlace.price_level !== undefined && (
-              <Chip mode="outlined" compact style={styles.infoChip}>
+              <Chip
+                mode="outlined"
+                compact
+                style={[styles.infoChip, { backgroundColor: COLORS.openStatusBackground }]}
+              >
                 {'$'.repeat(selectedPlace.price_level + 1)}
               </Chip>
             )}
@@ -137,12 +160,14 @@ const MapScreen = ({route, navigation}) => {
                 style={[
                   styles.infoChip,
                   {
-                    backgroundColor: selectedPlace.opening_hours.open_now
-                      ? '#e8f5e8'
-                      : '#ffeaea',
+                    backgroundColor: selectedPlace.opening_hours?.open_now
+                      ? COLORS.openStatusBackground
+                      : COLORS.closedStatusBackground,
                   },
-                ]}>
-                {selectedPlace.opening_hours.open_now ? 'Open' : 'Closed'}
+                ]}
+                icon={selectedPlace.opening_hours?.open_now ? 'check-circle' : 'schedule'}
+              >
+                {selectedPlace.opening_hours?.open_now ? 'Open' : 'Closed'}
               </Chip>
             )}
           </View>
@@ -152,14 +177,18 @@ const MapScreen = ({route, navigation}) => {
               mode="outlined"
               compact
               onPress={showAllPlaces}
-              style={styles.actionButton}>
+              style={styles.actionButton}
+              icon="map-marker-multiple"
+            >
               Show All Places
             </Button>
             <Button
               mode="contained"
               compact
               onPress={showOnlySelected}
-              style={styles.actionButton}>
+              style={styles.actionButton}
+              icon="map-marker"
+            >
               Focus Here
             </Button>
           </View>
@@ -178,9 +207,7 @@ const MapScreen = ({route, navigation}) => {
         style={styles.map}
       />
 
-      {selectedPlace && (
-        <View style={styles.detailsContainer}>{renderPlaceDetails()}</View>
-      )}
+      {selectedPlace && <View style={styles.detailsContainer}>{renderPlaceDetails()}</View>}
     </View>
   );
 };
@@ -214,7 +241,7 @@ const styles = StyleSheet.create({
   placeName: {
     fontWeight: 'bold',
     marginBottom: 4,
-    color: COLORS.text,
+    color: COLORS.textPrimary,
   },
   placeAddress: {
     color: COLORS.textSecondary,

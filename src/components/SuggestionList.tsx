@@ -1,26 +1,15 @@
 import React from 'react';
-import {
-  Animated,
-  Dimensions,
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import {Text, useTheme} from 'react-native-paper';
+import { Animated, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Text } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import {COLORS} from '../utils/constants';
-
-const {width} = Dimensions.get('window');
+import { COLORS } from '../utils/constants';
 
 const SuggestionList = ({
   suggestions,
   onSuggestionPress,
   visible,
-  style,
   searchQuery,
-}) => {
-  const theme = useTheme();
+}: SuggestionListProps) => {
   const fadeAnim = React.useRef(new Animated.Value(0)).current;
   const translateY = React.useRef(new Animated.Value(-20)).current;
 
@@ -56,10 +45,10 @@ const SuggestionList = ({
 
   if (!visible) return null;
 
-  const highlightText = text => {
+  const highlightText = (text: string): React.ReactNode => {
     if (!searchQuery) return text;
     const parts = text.split(new RegExp(`(${searchQuery})`, 'gi'));
-    return parts.map((part, i) =>
+    return parts.map((part: string, i: number) =>
       part.toLowerCase() === searchQuery.toLowerCase() ? (
         <Text key={i} style={styles.highlightedText}>
           {part}
@@ -74,32 +63,26 @@ const SuggestionList = ({
     <Animated.View
       style={[
         styles.container,
-        style,
         {
           opacity: fadeAnim,
-          transform: [{translateY}],
+          transform: [{ translateY }],
         },
-      ]}>
+      ]}
+    >
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={true}
-        nestedScrollEnabled={true}>
+        nestedScrollEnabled={true}
+      >
         {suggestions.map((item, index) => (
           <TouchableOpacity
             key={item.place_id}
             onPress={() => onSuggestionPress(item)}
-            style={[
-              styles.suggestionItem,
-              index === suggestions.length - 1 && styles.lastItem,
-            ]}>
+            style={[styles.suggestionItem, index === suggestions.length - 1 && styles.lastItem]}
+          >
             <View style={styles.iconContainer}>
-              <Icon
-                name="location-on"
-                size={24}
-                color={COLORS.primary}
-                style={styles.icon}
-              />
+              <Icon name="location-on" size={24} color={COLORS.primary} style={styles.icon} />
             </View>
             <View style={styles.textContainer}>
               <Text style={styles.mainText} numberOfLines={1}>
@@ -127,7 +110,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     elevation: 4,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     maxHeight: 300,
@@ -167,7 +150,7 @@ const styles = StyleSheet.create({
   mainText: {
     fontSize: 16,
     fontWeight: '500',
-    color: COLORS.text,
+    color: COLORS.textPrimary,
     marginBottom: 4,
   },
   secondaryText: {

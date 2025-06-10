@@ -1,12 +1,10 @@
 import React from 'react';
-import {StyleSheet, View} from 'react-native';
-import {Card, IconButton, Text, useTheme} from 'react-native-paper';
+import { StyleSheet, View } from 'react-native';
+import { Card, IconButton, Text } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import {COLORS} from '../utils/constants';
+import { COLORS } from '../utils/constants';
 
-const SearchHistoryItem = ({item, onPress, onDelete}) => {
-  const theme = useTheme();
-
+const SearchHistoryItem = ({ item, onPress, onDelete }: SearchHistoryItemProps) => {
   return (
     <Card style={styles.card} mode="elevated" onPress={() => onPress(item)}>
       <Card.Content style={styles.cardContent}>
@@ -18,17 +16,14 @@ const SearchHistoryItem = ({item, onPress, onDelete}) => {
             <Text variant="titleMedium" style={styles.title} numberOfLines={1}>
               {item.name}
             </Text>
-            <Text
-              variant="bodyMedium"
-              style={styles.description}
-              numberOfLines={2}>
+            <Text variant="bodyMedium" style={styles.description} numberOfLines={2}>
               {item.formatted_address || item.vicinity}
             </Text>
           </View>
         </View>
         <View style={styles.actions}>
           <IconButton
-            icon="map"
+            icon="map-marker"
             size={20}
             mode="contained-tonal"
             containerColor={COLORS.primary + '15'}

@@ -1,10 +1,15 @@
 import React from 'react';
-import {StyleSheet, View, Animated} from 'react-native';
-import {Button, Card, Chip, Text} from 'react-native-paper';
+import { Animated, StyleSheet, View } from 'react-native';
+import { Button, Card, Chip, Text } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import {COLORS} from '../utils/constants';
 
-const PlaceItem = ({place, onPress, onViewMap}) => {
+import { COLORS, getIconName } from '../utils/constants';
+
+const PlaceIcon = ({ type }: { type: string }) => {
+  return <Icon name={getIconName(type)} size={24} color={COLORS.primary} style={styles.icon} />;
+};
+
+const PlaceItem = ({ place, onPress, onViewMap }: PlaceItemProps) => {
   const renderRating = () =>
     place.rating && (
       <Animated.View style={styles.ratingContainer}>
@@ -12,17 +17,39 @@ const PlaceItem = ({place, onPress, onViewMap}) => {
         <Text style={styles.ratingText}>
           {place.rating.toFixed(1)}
           {place.user_ratings_total && (
-            <Text style={styles.ratingCount}>
-              {' '}
-              · {place.user_ratings_total}
-            </Text>
+            <Text style={styles.ratingCount}> · {place.user_ratings_total}</Text>
           )}
         </Text>
       </Animated.View>
     );
 
+  const handlePress = () => {
+    onPress(place);
+  };
+
+  const handleViewMap = () => {
+    if (onViewMap) {
+      onViewMap(place);
+    }
+  };
+  const walkIcon = () => <Icon name="directions-walk" size={16} color={COLORS.primary} />;
+  const circleIcon = () => (
+    <Icon
+      name="check-circle"
+      size={16}
+      color={place.opening_hours?.open_now ? COLORS.success : COLORS.error}
+    />
+  );
+  const scheduleIcon = () => (
+    <Icon
+      name="schedule"
+      size={16}
+      color={place.opening_hours?.open_now ? COLORS.success : COLORS.error}
+    />
+  );
+
   return (
-    <Card style={styles.card} onPress={onPress}>
+    <Card style={styles.card} onPress={handlePress}>
       <Card.Content style={styles.content}>
         <View style={styles.headerContainer}>
           <View style={styles.titleSection}>
@@ -33,7 +60,7 @@ const PlaceItem = ({place, onPress, onViewMap}) => {
           </View>
 
           <View style={styles.locationInfo}>
-            <Icon name="location-on" size={16} color={COLORS.primary} />
+            <PlaceIcon type={place.types?.[0] || 'point_of_interest'} />
             <Text style={styles.address} numberOfLines={1}>
               {place.formatted_address || place.vicinity}
             </Text>
@@ -42,11 +69,7 @@ const PlaceItem = ({place, onPress, onViewMap}) => {
 
         <View style={styles.infoContainer}>
           {place.distance && (
-            <Chip
-              style={styles.chip}
-              icon={() => (
-                <Icon name="directions-walk" size={16} color={COLORS.primary} />
-              )}>
+            <Chip style={styles.chip} icon={walkIcon}>
               {place.distance.toFixed(1)}km
             </Chip>
           )}
@@ -60,20 +83,11 @@ const PlaceItem = ({place, onPress, onViewMap}) => {
               style={[
                 styles.chip,
                 {
-                  backgroundColor: place.opening_hours.open_now
-                    ? '#E8F5E9'
-                    : '#FFEBEE',
+                  backgroundColor: place.opening_hours.open_now ? '#E8F5E9' : '#FFEBEE',
                 },
               ]}
-              icon={() => (
-                <Icon
-                  name={
-                    place.opening_hours.open_now ? 'check-circle' : 'schedule'
-                  }
-                  size={16}
-                  color={place.opening_hours.open_now ? '#4CAF50' : '#F44336'}
-                />
-              )}>
+              icon={place.opening_hours.open_now ? circleIcon : scheduleIcon}
+            >
               {place.opening_hours.open_now ? 'Open' : 'Closed'}
             </Chip>
           )}
@@ -81,23 +95,23 @@ const PlaceItem = ({place, onPress, onViewMap}) => {
 
         <View style={styles.tagContainer}>
           {place.types?.slice(0, 3).map((type, index) => (
-            <Chip
-              key={index}
-              style={styles.typeChip}
-              textStyle={styles.chipText}>
+            <Chip key={index} style={styles.typeChip} textStyle={styles.chipText}>
               {type.replace(/_/g, ' ')}
             </Chip>
           ))}
         </View>
 
-        <Button
-          mode="contained"
-          onPress={onViewMap}
-          icon="map"
-          style={styles.mapButton}
-          contentStyle={styles.buttonContent}>
-          View on Map
-        </Button>
+        {onViewMap && (
+          <Button
+            mode="contained"
+            onPress={handleViewMap}
+            icon="map-marker"
+            style={styles.mapButton}
+            contentStyle={styles.buttonContent}
+          >
+            View on Map
+          </Button>
+        )}
       </Card.Content>
     </Card>
   );
@@ -111,7 +125,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     elevation: 4,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
   },
@@ -186,12 +200,16 @@ const styles = StyleSheet.create({
     textTransform: 'capitalize',
   },
   mapButton: {
+    marginTop: 8,
     borderRadius: 12,
     elevation: 0,
     backgroundColor: COLORS.primary,
   },
   buttonContent: {
     height: 44,
+  },
+  icon: {
+    margin: 0,
   },
 });
 
