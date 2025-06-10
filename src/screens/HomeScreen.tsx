@@ -1,7 +1,6 @@
 import debounce from 'lodash/debounce';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
-  Alert,
   FlatList,
   KeyboardAvoidingView,
   PermissionsAndroid,
@@ -19,6 +18,13 @@ import GooglePlacesService from '../services/GooglePlacesService';
 import StorageService from '../services/StorageService';
 import { Place } from '../types/navigation';
 import { COLORS } from '../utils/constants';
+import {
+  getBottomTabHeight,
+  getResponsiveFontSize,
+  getResponsiveHeight,
+  getResponsiveMargin,
+  getResponsivePadding,
+} from '../utils/responsive';
 
 const EmptyState = () => (
   <View style={styles.emptyState}>
@@ -71,7 +77,7 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
         if (granted === PermissionsAndroid.RESULTS.GRANTED) {
           await getCurrentLocation();
         } else {
-          showSnackbar('Location permission denied');
+          navigation.navigate('Settings');
         }
       } catch (err) {
         showSnackbar('Error requesting location permission');
@@ -83,10 +89,8 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
 
         if (result === RESULTS.GRANTED) {
           await getCurrentLocation();
-        } else if (result === RESULTS.DENIED) {
-          showSnackbar('Location permission is required for nearby places');
-        } else if (result === RESULTS.BLOCKED) {
-          Alert.alert('Permission Required', 'Please enable location permission in settings.');
+        } else if (result === RESULTS.DENIED || result === RESULTS.BLOCKED) {
+          navigation.navigate('Settings');
         } else {
           showSnackbar('Unable to get location permission');
         }
@@ -94,7 +98,7 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
         showSnackbar('Error requesting location permission');
       }
     }
-  }, [showSnackbar]);
+  }, [navigation, showSnackbar]);
 
   const getCurrentLocation = useCallback(async () => {
     if (!Geolocation) {
@@ -343,11 +347,19 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
           onChangeText={handleSearchChange}
           value={searchQuery}
           onSubmitEditing={searchPlaces}
-          style={styles.searchbar}
+          style={styles.searchBar}
           icon="magnify"
           clearIcon="close"
           onClearIconPress={handleSearchClear}
           onFocus={() => setShowSuggestions(true)}
+          placeholderTextColor={COLORS.onSurfaceVariant}
+          theme={{
+            fonts: {
+              bodyLarge: {
+                fontSize: getResponsiveFontSize(16),
+              },
+            },
+          }}
         />
       </View>
 
@@ -382,20 +394,19 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: '#F3F4F6',
   },
   searchContainer: {
-    padding: 16,
-    backgroundColor: COLORS.surface,
-    elevation: 2,
-    zIndex: 1,
+    paddingHorizontal: getResponsivePadding(16),
+    paddingTop: getResponsivePadding(16),
+    paddingBottom: getResponsivePadding(8),
+    backgroundColor: '#FFFFFF',
   },
-  searchbar: {
+  searchBar: {
     elevation: 0,
-    backgroundColor: COLORS.surface,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    borderRadius: 12,
+    backgroundColor: '#F3F4F6',
+    borderRadius: getResponsivePadding(12),
+    height: getResponsiveHeight(48),
   },
   content: {
     flex: 1,
@@ -407,45 +418,44 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   loadingText: {
-    marginTop: 12,
-    color: COLORS.textPrimary,
+    marginTop: getResponsiveMargin(16),
+    color: COLORS.primary,
+    fontSize: getResponsiveFontSize(16),
   },
   emptyState: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 24,
+    paddingHorizontal: getResponsivePadding(32),
   },
   emptyIcon: {
-    marginBottom: 16,
-    opacity: 0.8,
+    marginBottom: getResponsiveMargin(16),
   },
   emptyTitle: {
-    color: COLORS.textPrimary,
-    marginBottom: 8,
-    textAlign: 'center',
-    fontWeight: '600',
+    color: COLORS.primary,
+    marginBottom: getResponsiveMargin(8),
+    fontSize: getResponsiveFontSize(20),
   },
   emptySubtitle: {
-    color: COLORS.textSecondary,
+    color: '#6B7280',
     textAlign: 'center',
+    fontSize: getResponsiveFontSize(16),
   },
   fab: {
     position: 'absolute',
-    margin: 16,
-    right: 0,
-    bottom: 80,
-    backgroundColor: COLORS.bottomTab,
-    borderRadius: 16,
+    right: getResponsiveMargin(16),
+    bottom: getBottomTabHeight() + getResponsiveMargin(26),
+    backgroundColor: COLORS.primary,
+    borderRadius: getResponsivePadding(16),
   },
   listContent: {
     flexGrow: 1,
-    paddingTop: 16,
-    paddingBottom: 100,
-    marginTop: 5,
+    paddingTop: getResponsivePadding(16),
+    paddingBottom: getBottomTabHeight() + getResponsivePadding(16),
+    marginTop: getResponsiveMargin(5),
   },
   separator: {
-    height: 12,
+    height: getResponsiveHeight(8),
   },
 });
 

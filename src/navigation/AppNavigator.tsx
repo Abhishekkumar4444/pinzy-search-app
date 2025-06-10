@@ -6,9 +6,16 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import HistoryScreen from '../screens/HistoryScreen';
 import HomeScreen from '../screens/HomeScreen';
 import MapScreen from '../screens/MapScreen';
+import SettingsScreen from '../screens/SettingsScreen';
 import SplashScreen from '../screens/SplashScreen';
 import { RootStackParamList, TabParamList } from '../types/navigation';
 import { COLORS } from '../utils/constants';
+import {
+  getBottomTabHeight,
+  getResponsiveFontSize,
+  getResponsiveMargin,
+  getResponsivePadding,
+} from '../utils/responsive';
 
 const Tab = createBottomTabNavigator<TabParamList>();
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -17,6 +24,7 @@ const HomeStack: React.FC = () => (
   <Stack.Navigator>
     <Stack.Screen name="HomeMain" component={HomeScreen} options={{ title: 'Search Places' }} />
     <Stack.Screen name="MapDetail" component={MapScreen} options={{ title: 'Place Details' }} />
+    <Stack.Screen name="Settings" component={SettingsScreen} options={{ title: 'Settings' }} />
   </Stack.Navigator>
 );
 HomeStack.displayName = 'HomeStack';
@@ -88,13 +96,13 @@ AppNavigator.displayName = 'AppNavigator';
 const styles = StyleSheet.create({
   tabBar: {
     position: 'absolute',
-    bottom: 16,
-    left: 16,
-    right: 16,
+    bottom: getResponsiveMargin(0),
+    left: getResponsiveMargin(16),
+    right: getResponsiveMargin(16),
     elevation: 0,
     backgroundColor: '#374151',
-    borderRadius: 16,
-    height: 70,
+    borderRadius: getResponsivePadding(16),
+    height: getBottomTabHeight(),
     borderTopWidth: 0,
     shadowColor: COLORS.primary,
     shadowOffset: {
@@ -107,17 +115,17 @@ const styles = StyleSheet.create({
     paddingTop: 0,
   },
   tabBarLabel: {
-    fontSize: 12,
+    fontSize: getResponsiveFontSize(12),
     fontWeight: '500',
-    marginBottom: 4,
+    marginBottom: getResponsiveMargin(4),
   },
   iconContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: getResponsivePadding(40),
+    height: getResponsivePadding(40),
+    borderRadius: getResponsivePadding(20),
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 4,
+    marginTop: getResponsiveMargin(4),
   },
   activeIconContainer: {
     backgroundColor: COLORS.primary + '15',

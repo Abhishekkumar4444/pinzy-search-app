@@ -37,35 +37,30 @@ export interface OpeningHours {
 }
 
 export interface Place {
-  place_id: string;
+  place_id?: string;
   name: string;
   formatted_address?: string;
   vicinity?: string;
-  geometry: {
+  geometry?: {
     location: {
       lat: number;
       lng: number;
     };
   };
+  types?: string[];
   rating?: number;
   user_ratings_total?: number;
   price_level?: number;
   opening_hours?: {
     open_now: boolean;
   };
-  types?: string[];
-
   distance?: number;
   timestamp?: number;
 }
 
 export interface PlaceSuggestion {
-  place_id: string;
   description: string;
-  structured_formatting: {
-    main_text: string;
-    secondary_text: string;
-  };
+  place_id: string;
 }
 
 export interface AutocompletePrediction {
@@ -78,13 +73,18 @@ export interface AutocompletePrediction {
   types: string[];
 }
 
+export interface Region {
+  latitude: number;
+  longitude: number;
+  latitudeDelta: number;
+  longitudeDelta: number;
+}
+
 export type RootStackParamList = {
   Splash: undefined;
   Main: undefined;
-  HomeMain: undefined;
-  MapDetail: {
-    place: Place;
-  };
+  MapDetail: { place: Place };
+  Settings: undefined;
 };
 
 export type TabParamList = {

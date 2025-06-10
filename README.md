@@ -1,36 +1,27 @@
 # Pinzy Search App
 
-A modern React Native application for searching and discovering places using Google Places API.
+A React Native application for searching and discovering places using the Google Places API.
 
 ## Features
 
-- 🔍 Real-time place search with Google Places API
-- 🗺️ Interactive map display with markers
-- 📍 Location-based search
-- 📱 Responsive and modern UI
-- 🌙 Dark/Light theme support
-- 📋 Search history management
-- 🔄 Offline support for search history
-- 🎯 Accurate place details and information
-
-## Technical Stack
-
-- React Native
-- TypeScript
-- Google Maps & Places API
-- React Navigation
-- React Native Paper
-- AsyncStorage for local storage
-- Axios for API calls
+- Search for places using Google Places API
+- View place details and location on map
+- Save search history
+- View nearby places
+- Responsive design for all screen sizes
+- Dark mode support
 
 ## Prerequisites
 
-- Node.js >= 16
-- React Native development environment setup
-- Google Maps API key
+- Node.js (v14 or higher)
+- npm or yarn
+- React Native CLI
+- Xcode (for iOS development)
+- CocoaPods (for iOS dependencies)
+- Android Studio (for Android development)
 - Google Places API key
 
-## Setup Instructions
+## Installation
 
 1. Clone the repository:
 
@@ -43,73 +34,141 @@ cd pinzy-search-app
 
 ```bash
 npm install
+# or
+yarn install
 ```
 
-3. Create a `.env` file in the root directory with the following variables:
-
-```
-GOOGLE_MAPS_API_KEY=your_google_maps_api_key_here
-GOOGLE_PLACES_API_KEY=your_google_places_api_key_here
-BASE_URL=https://maps.googleapis.com/maps/api/place
-APP_NAME=Pinzy Search
-APP_ENV=development
-```
-
-4. iOS Setup:
+3. Install iOS dependencies:
 
 ```bash
 cd ios
 pod install
 cd ..
-npm run ios
 ```
 
-5. Android Setup:
+4. Create a `.env` file in the root directory and add your Google Places API key:
+
+```
+GOOGLE_PLACES_API_KEY=your_api_key_here
+```
+
+## iOS Setup
+
+1. Install Xcode from the Mac App Store
+2. Install CocoaPods:
+
+```bash
+sudo gem install cocoapods
+```
+
+3. Open the iOS project in Xcode:
+
+```bash
+cd ios
+open PinzySearchApp.xcworkspace
+```
+
+4. In Xcode:
+
+   - Select your development team in Signing & Capabilities
+   - Update the Bundle Identifier if needed
+   - Enable location services in Info.plist:
+     - Add `NSLocationWhenInUseUsageDescription` with a description
+     - Add `NSLocationAlwaysAndWhenInUseUsageDescription` with a description
+
+5. Install pods:
+
+```bash
+pod install
+```
+
+6. Run the app:
+
+```bash
+# From the root directory
+npm run ios
+# or
+yarn ios
+```
+
+## Android Setup
+
+1. Install Android Studio
+2. Set up Android SDK and environment variables
+3. Create a new Android Virtual Device (AVD)
+4. Enable location services in AndroidManifest.xml:
+
+   - Add `ACCESS_FINE_LOCATION` permission
+   - Add `ACCESS_COARSE_LOCATION` permission
+
+5. Run the app:
 
 ```bash
 npm run android
+# or
+yarn android
+```
+
+## Development
+
+Start the development server:
+
+```bash
+npm start
+# or
+yarn start
+```
+
+## Building for Production
+
+### iOS
+
+1. Open the project in Xcode
+2. Select Product > Archive
+3. Follow the distribution steps in Xcode
+
+### Android
+
+1. Generate a signing key
+2. Configure the signing in `android/app/build.gradle`
+3. Run:
+
+```bash
+cd android
+./gradlew assembleRelease
 ```
 
 ## Project Structure
 
 ```
 src/
-├── assets/         # Images, fonts, and other static assets
 ├── components/     # Reusable UI components
-├── context/        # React Context providers
-├── navigation/     # Navigation configuration
 ├── screens/        # Screen components
+├── navigation/     # Navigation configuration
 ├── services/       # API and other services
-├── types/          # TypeScript type definitions
-└── utils/          # Utility functions and constants
+├── utils/         # Utility functions
+├── types/         # TypeScript type definitions
 ```
 
-## Architecture
+## Dependencies
 
-The application follows Clean Architecture principles with a clear separation of concerns:
-
-- **Presentation Layer**: Screens and Components
-- **Domain Layer**: Services and Business Logic
-- **Data Layer**: API calls and Local Storage
-
-## Best Practices Implemented
-
-- TypeScript for type safety
-- Environment variables for configuration
-- Proper error handling
-- Loading states and error states
-- Responsive design
-- Performance optimization
-- Code modularity
-- Clean code principles
+- React Native
+- React Navigation
+- React Native Paper
+- React Native Maps
+- React Native Vector Icons
+- React Native Geolocation Service
+- React Native Permissions
+- React Native Environment Info
+- React Native Config
 
 ## Contributing
 
 1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+2. Create your feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
 
 ## License
 
