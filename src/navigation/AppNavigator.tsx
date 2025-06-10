@@ -48,8 +48,8 @@ const MainTabs: React.FC = () => (
   <Tab.Navigator
     screenOptions={({ route }) => ({
       tabBarIcon: getTabBarIcon(route.name as keyof TabParamList),
-      tabBarActiveTintColor: COLORS.primary,
-      tabBarInactiveTintColor: COLORS.textSecondary,
+      tabBarActiveTintColor: '#40E0D0',
+      tabBarInactiveTintColor: '#B8E0E0',
       headerShown: false,
       tabBarStyle: styles.tabBar,
       tabBarLabelStyle: styles.tabBarLabel,

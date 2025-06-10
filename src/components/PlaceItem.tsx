@@ -1,215 +1,118 @@
 import React from 'react';
-import { Animated, StyleSheet, View } from 'react-native';
-import { Button, Card, Chip, Text } from 'react-native-paper';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Card, IconButton, Text } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { Place } from '../types/navigation';
+import { COLORS } from '../utils/constants';
 
-import { COLORS, getIconName } from '../utils/constants';
+interface PlaceItemProps {
+  place: Place;
+  onPress: () => void;
+  onViewMap: () => void;
+}
 
-const PlaceIcon = ({ type }: { type: string }) => {
-  return <Icon name={getIconName(type)} size={24} color={COLORS.primary} style={styles.icon} />;
-};
-
-const PlaceItem = ({ place, onPress, onViewMap }: PlaceItemProps) => {
-  const renderRating = () =>
-    place.rating && (
-      <Animated.View style={styles.ratingContainer}>
-        <Icon name="star" size={18} color="#FFD700" />
-        <Text style={styles.ratingText}>
-          {place.rating.toFixed(1)}
-          {place.user_ratings_total && (
-            <Text style={styles.ratingCount}> · {place.user_ratings_total}</Text>
-          )}
-        </Text>
-      </Animated.View>
-    );
-
-  const handlePress = () => {
-    onPress(place);
-  };
-
-  const handleViewMap = () => {
-    if (onViewMap) {
-      onViewMap(place);
+const PlaceIcon: React.FC<{ type: string }> = ({ type }) => {
+  const getIconName = (type: string): string => {
+    switch (type) {
+      case 'restaurant':
+        return 'restaurant';
+      case 'cafe':
+        return 'local-cafe';
+      case 'bar':
+        return 'local-bar';
+      case 'hotel':
+        return 'hotel';
+      case 'shopping':
+        return 'shopping-bag';
+      case 'attraction':
+        return 'attractions';
+      default:
+        return 'place';
     }
   };
-  const walkIcon = () => <Icon name="directions-walk" size={16} color={COLORS.primary} />;
-  const circleIcon = () => (
-    <Icon
-      name="check-circle"
-      size={16}
-      color={place.opening_hours?.open_now ? COLORS.success : COLORS.error}
-    />
-  );
-  const scheduleIcon = () => (
-    <Icon
-      name="schedule"
-      size={16}
-      color={place.opening_hours?.open_now ? COLORS.success : COLORS.error}
-    />
-  );
 
   return (
-    <Card style={styles.card} onPress={handlePress}>
-      <Card.Content style={styles.content}>
-        <View style={styles.headerContainer}>
-          <View style={styles.titleSection}>
-            <Text style={styles.title} numberOfLines={1}>
-              {place.name}
-            </Text>
-            {renderRating()}
+    <View style={styles.iconContainer}>
+      <Icon name={getIconName(type)} size={20} color={COLORS.primary} />
+    </View>
+  );
+};
+
+const PlaceItem: React.FC<PlaceItemProps> = ({ place, onPress, onViewMap }) => {
+  const handlePress = () => {
+    onPress();
+  };
+
+  return (
+    <TouchableOpacity onPress={handlePress} activeOpacity={0.7}>
+      <Card style={styles.card} mode="elevated">
+        <Card.Content style={styles.cardContent}>
+          <View style={styles.mainContent}>
+            <PlaceIcon type={place.types?.[0] || 'place'} />
+            <View style={styles.textContainer}>
+              <Text variant="titleMedium" style={styles.name} numberOfLines={1}>
+                {place.name}
+              </Text>
+              <Text variant="bodySmall" style={styles.address} numberOfLines={1}>
+                {place.formatted_address || place.vicinity}
+              </Text>
+            </View>
+            <IconButton
+              icon="map"
+              size={20}
+              iconColor={COLORS.primary}
+              onPress={onViewMap}
+              style={styles.mapButton}
+            />
           </View>
-
-          <View style={styles.locationInfo}>
-            <PlaceIcon type={place.types?.[0] || 'point_of_interest'} />
-            <Text style={styles.address} numberOfLines={1}>
-              {place.formatted_address || place.vicinity}
-            </Text>
-          </View>
-        </View>
-
-        <View style={styles.infoContainer}>
-          {place.distance && (
-            <Chip style={styles.chip} icon={walkIcon}>
-              {place.distance.toFixed(1)}km
-            </Chip>
-          )}
-
-          {place.price_level !== undefined && (
-            <Chip style={styles.chip}>{'$'.repeat(place.price_level + 1)}</Chip>
-          )}
-
-          {place.opening_hours && (
-            <Chip
-              style={[
-                styles.chip,
-                {
-                  backgroundColor: place.opening_hours.open_now ? '#E8F5E9' : '#FFEBEE',
-                },
-              ]}
-              icon={place.opening_hours.open_now ? circleIcon : scheduleIcon}
-            >
-              {place.opening_hours.open_now ? 'Open' : 'Closed'}
-            </Chip>
-          )}
-        </View>
-
-        <View style={styles.tagContainer}>
-          {place.types?.slice(0, 3).map((type, index) => (
-            <Chip key={index} style={styles.typeChip} textStyle={styles.chipText}>
-              {type.replace(/_/g, ' ')}
-            </Chip>
-          ))}
-        </View>
-
-        {onViewMap && (
-          <Button
-            mode="contained"
-            onPress={handleViewMap}
-            icon="map-marker"
-            style={styles.mapButton}
-            contentStyle={styles.buttonContent}
-          >
-            View on Map
-          </Button>
-        )}
-      </Card.Content>
-    </Card>
+        </Card.Content>
+      </Card>
+    </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
   card: {
     marginHorizontal: 16,
-    marginVertical: 8,
-    borderRadius: 16,
+    marginVertical: 4,
     backgroundColor: '#FFFFFF',
-    elevation: 4,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
+    borderRadius: 12,
+    elevation: 2,
   },
-  content: {
-    padding: 16,
+  cardContent: {
+    paddingVertical: 8,
+    paddingHorizontal: 12,
   },
-  headerContainer: {
-    marginBottom: 16,
-  },
-  titleSection: {
+  mainContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 8,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#1A1A1A',
     flex: 1,
   },
-  ratingContainer: {
-    flexDirection: 'row',
+  iconContainer: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: COLORS.primary + '15',
+    justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#FFF8E1',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
+    marginRight: 12,
   },
-  ratingText: {
-    marginLeft: 4,
-    fontSize: 14,
+  textContainer: {
+    flex: 1,
+    marginRight: 8,
+  },
+  name: {
+    color: '#1F2937',
     fontWeight: '600',
-    color: '#FFA000',
-  },
-  ratingCount: {
-    color: '#757575',
-    fontSize: 12,
-  },
-  locationInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    marginBottom: 2,
   },
   address: {
-    marginLeft: 4,
-    fontSize: 14,
-    color: '#666666',
-    flex: 1,
-  },
-  infoContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginBottom: 16,
-    gap: 8,
-  },
-  chip: {
-    backgroundColor: '#F5F5F5',
-    height: 32,
-  },
-  tagContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-    marginBottom: 16,
-  },
-  typeChip: {
-    backgroundColor: COLORS.primary + '15',
-    height: 28,
-  },
-  chipText: {
-    fontSize: 12,
-    textTransform: 'capitalize',
+    color: '#6B7280',
   },
   mapButton: {
-    marginTop: 8,
-    borderRadius: 12,
-    elevation: 0,
-    backgroundColor: COLORS.primary,
-  },
-  buttonContent: {
-    height: 44,
-  },
-  icon: {
     margin: 0,
+    marginLeft: 'auto',
+    backgroundColor: COLORS.primary + '10',
   },
 });
 

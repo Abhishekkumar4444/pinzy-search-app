@@ -1,5 +1,3 @@
-import { ParamListBase } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import debounce from 'lodash/debounce';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
@@ -19,6 +17,7 @@ import PlaceItem from '../components/PlaceItem';
 import SuggestionList from '../components/SuggestionList';
 import GooglePlacesService from '../services/GooglePlacesService';
 import StorageService from '../services/StorageService';
+import { Place } from '../types/navigation';
 import { COLORS } from '../utils/constants';
 
 const EmptyState = () => (
@@ -303,11 +302,16 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
       return (
         <FlatList
           data={places}
-          renderItem={renderPlaceItem}
-          keyExtractor={item => item.place_id || String(Math.random())}
-          showsVerticalScrollIndicator={false}
+          keyExtractor={item => item.place_id || item.name}
+          renderItem={({ item }) => (
+            <PlaceItem
+              place={item}
+              onPress={() => handlePlacePress(item)}
+              onViewMap={() => handleViewMap(item)}
+            />
+          )}
           contentContainerStyle={styles.listContent}
-          ItemSeparatorComponent={ItemSeparator}
+          ListEmptyComponent={loading ? <LoadingState /> : <EmptyState />}
         />
       );
     }
@@ -316,6 +320,7 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
   }, [loading, places, renderPlaceItem, ItemSeparator]);
 
   const handleSearchChange = useCallback((text: string) => {
+    setPlaces([]);
     setSearchQuery(text);
     setShowSuggestions(true);
   }, []);
@@ -429,12 +434,15 @@ const styles = StyleSheet.create({
     position: 'absolute',
     margin: 16,
     right: 0,
-    bottom: 0,
-    backgroundColor: COLORS.primary,
+    bottom: 80,
+    backgroundColor: COLORS.bottomTab,
     borderRadius: 16,
   },
   listContent: {
-    paddingVertical: 8,
+    flexGrow: 1,
+    paddingTop: 16,
+    paddingBottom: 100,
+    marginTop: 5,
   },
   separator: {
     height: 12,

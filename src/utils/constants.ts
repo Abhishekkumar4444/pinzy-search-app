@@ -53,6 +53,7 @@ export const COLORS = {
   priceChipBackground: '#E8F5E9',
   priceChipBorder: '#C8E6C9',
   priceChipText: '#2E7D32',
+  bottomTab: '#40E0D0',
 
   // Border colors
   border: '#E0E0E0',
