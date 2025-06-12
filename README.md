@@ -11,6 +11,28 @@ A React Native application for searching and discovering places using the Google
 - Responsive design for all screen sizes
 - Dark mode support
 
+## Screenshots
+
+### Home Screen
+
+![Home Screen](src/assets/1.png)
+_Search for places and view nearby locations_
+
+### Home Screen
+
+![Home Screen](src/assets/2.png)
+_Search List locations_
+
+### Map View
+
+![Map View](src/assets/3.png)
+_View place details and location on the map_
+
+### History
+
+![Map View](src/assets/4.png)
+_View your search history_
+
 ## Prerequisites
 
 - Node.js (v14 or higher)

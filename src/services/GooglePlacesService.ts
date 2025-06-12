@@ -1,5 +1,6 @@
+import { GOOGLE_PLACES_API_KEY } from '@env';
 import axios from 'axios';
-import { BASE_URL, GOOGLE_PLACES_API_KEY, INDIA_CENTER } from '../utils/constants';
+import { BASE_URL, INDIA_CENTER } from '../utils/constants';
 
 class GooglePlacesService {
   async getAutocompleteSuggestions(

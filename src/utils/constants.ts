@@ -1,5 +1,3 @@
-export const GOOGLE_PLACES_API_KEY = 'AIzaSyAb-Xk2v4DBRMrouIjHW3PYDQeiflm4Yjo';
-export const GOOGLE_MAPS_API_KEY = 'AIzaSyAb-Xk2v4DBRMrouIjHW3PYDQeiflm4Yjo';
 export const TAB_BAR_HEIGHT = 49; // Standard tab bar height
 export const INDIA_CENTER = {
   lat: 20.5937,

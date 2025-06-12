@@ -384,6 +384,7 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
         visible={snackbarVisible}
         onDismiss={() => setSnackbarVisible(false)}
         duration={3000}
+        style={styles.snackbar}
       >
         {snackbarMessage}
       </Snackbar>
@@ -456,6 +457,12 @@ const styles = StyleSheet.create({
   },
   separator: {
     height: getResponsiveHeight(8),
+  },
+  snackbar: {
+    position: 'absolute',
+    bottom: getBottomTabHeight() + getResponsiveMargin(16),
+    left: getResponsiveMargin(16),
+    right: getResponsiveMargin(16),
   },
 });
 
