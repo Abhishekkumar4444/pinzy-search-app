@@ -12,7 +12,7 @@ const SplashScreen = () => {
           <Icon name="location-on" size={100} color={COLORS.secondary} />
         </View>
         <Text variant="headlineLarge" style={styles.title}>
-          Location Search
+          Pinzy
         </Text>
         <Text variant="bodyLarge" style={styles.subtitle}>
           Discover places around you
