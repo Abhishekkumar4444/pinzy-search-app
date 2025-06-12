@@ -11,27 +11,101 @@ A React Native application for searching and discovering places using the Google
 - Responsive design for all screen sizes
 - Dark mode support
 
-## Screenshots
+## API Integration
 
-### Home Screen
+### Google Places API
+
+The app uses Google Places API for the following features:
+
+1. **Place Search**
+
+   - Text search for places
+   - Autocomplete suggestions
+   - Place details retrieval
+
+   ```javascript
+   // Example API call
+   const searchPlaces = async (query: string) => {
+     const response = await GooglePlacesService.searchPlaces(query);
+     return response;
+   };
+   ```
+
+2. **Nearby Places**
+
+   - Location-based search
+   - Distance calculation
+   - Place categorization
+
+   ```javascript
+   // Example API call
+   const getNearbyPlaces = async (latitude: number, longitude: number) => {
+     const response = await GooglePlacesService.getNearbyPlaces(latitude, longitude);
+     return response;
+   };
+   ```
+
+3. **Place Details**
+   - Comprehensive place information
+   - Photos and reviews
+   - Opening hours and contact info
+   ```javascript
+   // Example API call
+   const getPlaceDetails = async (placeId: string) => {
+     const response = await GooglePlacesService.getPlaceDetails(placeId);
+     return response;
+   };
+   ```
+
+### API Key Setup
+
+1. Get your API key from [Google Cloud Console](https://console.cloud.google.com)
+2. Enable Places API in your project
+3. Add the API key to your `.env` file:
+   ```
+   GOOGLE_PLACES_API_KEY=your_api_key_here
+   ```
+
+## App Screenshots
+
+<table>
+<tr>
+<td width="50%">
+
+### Search Interface
 
 ![Home Screen](src/assets/1.png)
-_Search for places and view nearby locations_
+_Main search interface with location services_
 
-### Home Screen
+</td>
+<td width="50%">
+
+### Search Results
 
 ![Home Screen](src/assets/2.png)
-_Search List locations_
+_Search results with place suggestions and details_
 
-### Map View
+</td>
+</tr>
+<tr>
+<td width="50%">
+
+### Map Integration
 
 ![Map View](src/assets/3.png)
-_View place details and location on the map_
+_Interactive map view with place markers and details_
 
-### History
+</td>
+<td width="50%">
+
+### Location History
 
 ![Map View](src/assets/4.png)
-_View your search history_
+_Saved search history with place details_
+
+</td>
+</tr>
+</table>
 
 ## Prerequisites
 
