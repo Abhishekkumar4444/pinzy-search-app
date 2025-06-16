@@ -85,8 +85,8 @@ interface Marker extends Place {
 interface Region {
   latitude: number;
   longitude: number;
-  latitudeDelta: number;
-  longitudeDelta: number;
+  latitudeDelta?: number;
+  longitudeDelta?: number;
 }
 interface Props {
   region: Region;

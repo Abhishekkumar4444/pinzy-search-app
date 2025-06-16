@@ -2,7 +2,6 @@ import React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Card, IconButton, Text } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { Place } from '../types/navigation';
 import { COLORS, getIconName } from '../utils/constants';
 import {
   getResponsiveFontSize,
@@ -31,7 +30,7 @@ const PlaceItem: React.FC<PlaceItemProps> = ({ place, onPress, onViewMap }) => {
   };
 
   return (
-    <TouchableOpacity onPress={handlePress} activeOpacity={0.7}>
+    <TouchableOpacity onPress={handlePress} activeOpacity={1}>
       <Card style={styles.card} mode="elevated">
         <Card.Content style={styles.cardContent}>
           <View style={styles.mainContent}>

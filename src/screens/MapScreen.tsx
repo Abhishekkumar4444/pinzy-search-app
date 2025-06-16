@@ -165,7 +165,7 @@ const MapScreen = ({ route }: { route?: RouteProp<any, any> }) => {
                       : COLORS.closedStatusBackground,
                   },
                 ]}
-                icon={selectedPlace.opening_hours?.open_now ? 'check-circle' : 'schedule'}
+                icon={selectedPlace.opening_hours?.open_now ? 'check-circle' : 'close'}
               >
                 {selectedPlace.opening_hours?.open_now ? 'Open' : 'Closed'}
               </Chip>

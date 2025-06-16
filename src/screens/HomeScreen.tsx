@@ -15,9 +15,9 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import PlaceItem from '../components/PlaceItem';
 import SuggestionList from '../components/SuggestionList';
 import GooglePlacesService from '../services/GooglePlacesService';
-import StorageService from '../services/StorageService';
-import { Place } from '../types/navigation';
+import { saveSearchHistory, SearchLocation } from '../services/StorageService';
 import { COLORS } from '../utils/constants';
+
 import {
   getBottomTabHeight,
   getResponsiveFontSize,
@@ -25,7 +25,6 @@ import {
   getResponsiveMargin,
   getResponsivePadding,
 } from '../utils/responsive';
-
 const EmptyState = () => (
   <View style={styles.emptyState}>
     <Icon name="search" size={48} color={COLORS.primary} style={styles.emptyIcon} />
@@ -199,6 +198,7 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
     }
   }, [currentLocation, showSnackbar]);
 
+  // handlePlacePress: Save to SQLite
   const handlePlacePress = useCallback(
     async (place: Place) => {
       try {
@@ -206,7 +206,7 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
           ...place,
           timestamp: Date.now(),
         };
-        await StorageService.saveSearchHistory(placeWithTimestamp);
+        await saveSearchHistory(placeWithTimestamp);
         navigation.navigate('MapDetail', { place });
       } catch (error) {
         showSnackbar('Error saving to history');
@@ -216,6 +216,7 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
     [navigation, showSnackbar],
   );
 
+  // handleViewMap: Also uses SQLite storage
   const handleViewMap = useCallback(
     async (place: Place) => {
       try {
@@ -223,7 +224,7 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
           ...place,
           timestamp: Date.now(),
         };
-        await StorageService.saveSearchHistory(placeWithTimestamp);
+        await saveSearchHistory(placeWithTimestamp);
         navigation.navigate('MapDetail', { place });
       } catch (error) {
         showSnackbar('Error saving to history');

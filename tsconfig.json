@@ -42,5 +42,5 @@
     "svg.d.ts"
   ],
   "exclude": ["node_modules", "android", "ios", "build", "dist", "coverage"],
-  "typeRoots": ["./node_modules/@types", "./types"]
+  "typeRoots": ["./types", "./node_modules/@types"]
 }

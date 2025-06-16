@@ -4,8 +4,12 @@ import { Alert, Platform, StyleSheet, View } from 'react-native';
 import { Button, Dialog, FAB, List, Text, TouchableRipple } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import StorageService from '../services/StorageService';
 import { COLORS, TAB_BAR_HEIGHT } from '../utils/constants';
+import {
+  removeFromHistory,
+  clearSearchHistory,
+  getSearchHistory,
+} from '../services/StorageService';
 
 const EmptyState = () => (
   <View style={styles.emptyContainer}>
@@ -66,7 +70,7 @@ const HistoryScreen = ({ navigation }: HistoryScreenProps) => {
 
   const loadHistory = useCallback(async () => {
     try {
-      const searchHistory = await StorageService.getSearchHistory();
+      const searchHistory = await getSearchHistory();
       setHistory(searchHistory);
     } catch (error) {
       console.error('Error loading history:', error);
@@ -93,7 +97,7 @@ const HistoryScreen = ({ navigation }: HistoryScreenProps) => {
 
   const handleDeleteItem = useCallback(async (placeId: string) => {
     try {
-      await StorageService.removeFromHistory(placeId);
+      await removeFromHistory(placeId);
       setHistory(prevHistory => prevHistory.filter(item => item.place_id !== placeId));
     } catch (error) {
       console.error('Error deleting item:', error);
@@ -114,7 +118,7 @@ const HistoryScreen = ({ navigation }: HistoryScreenProps) => {
           style: 'destructive',
           onPress: async () => {
             try {
-              await StorageService.clearSearchHistory();
+              await clearSearchHistory();
               setHistory([]);
             } catch (error) {
               console.error('Error clearing history:', error);
