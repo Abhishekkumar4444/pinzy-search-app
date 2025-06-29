@@ -15,7 +15,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import PlaceItem from '../components/PlaceItem';
 import SuggestionList from '../components/SuggestionList';
 import GooglePlacesService from '../services/GooglePlacesService';
-import { saveSearchHistory, SearchLocation } from '../services/StorageService';
+import { saveSearchHistory } from '../services/StorageService';
 import { COLORS } from '../utils/constants';
 
 import {
